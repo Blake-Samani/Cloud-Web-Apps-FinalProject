@@ -1,5 +1,6 @@
 import * as Element from './element.js'
 import * as Route from '../controller/route.js'
+import * as Auth from '../controller/auth.js'
 
 export function addEventListeners() {
 	Element.menuHome.addEventListener('click', () => {
@@ -9,6 +10,8 @@ export function addEventListeners() {
 }
 
 export function home_page() {
+	if(!Auth.currentUser) return;
+
 	Element.root.innerHTML = `
 		<h1>Welcome to Home page </h1>
 	`;

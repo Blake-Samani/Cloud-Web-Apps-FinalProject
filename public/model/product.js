@@ -1,8 +1,8 @@
 export class Product {
 	constructor(data){ //data == js object that holds info about product
-		this.name = data.name.toLowerCase();
+		this.name = data.name.toLowerCase().trim();
 		this.price = typeof data.price == 'number' ? data.price : Number(data.price); //store as is otherwise convert to number
-		this.summary = data.summary;
+		this.summary = data.summary.trim();
 		this.imageName = data.imageName;
 		this.imageURL = data.imageURL;
 	}
@@ -15,6 +15,17 @@ export class Product {
 			imageName: this.imageName,
 			imageURL: this.imageURL,
 		}
+	}
+
+	serializeForUpdate(){
+		const p = {};
+		if (this.name) p.name = this.name;
+		if (this.price) p.price = this.price;
+		if (this.summary) p.summary = this.summary;
+		if (this.imageName) p.imageName = this.imageName;
+		if (this.imageURL) p.imageURL = this.imageURL;
+		return p;
+
 	}
 
 	validate(imageFile){

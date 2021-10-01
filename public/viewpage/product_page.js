@@ -4,6 +4,8 @@ import * as FirebaseController from '../controller/firebase_controller.js'
 import * as Constant from '../model/constant.js'
 import * as Util from './util.js'
 import * as Route from '../controller/route.js'
+import * as Edit from '../controller/edit_product.js'
+import * as Auth from '../controller/auth.js'
 
 let imageFile2Upload
 
@@ -40,6 +42,7 @@ export function addEventListeners(){
 
 export async function product_page() {
 
+	if(!Auth.currentUser) return;
 
 	let html = `
 		<div>
@@ -70,6 +73,31 @@ export async function product_page() {
 		Element.modalAddProduct.show();
 
 	});
+
+	const editForms = document.getElementsByClassName('form-edit-product');
+
+	for (let i = 0; i < editForms.length; i++){
+		editForms[i].addEventListener('submit', async e => {
+			e.preventDefault();
+			const button = e.target.getElementsByTagName('button')[0];
+			const label =  Util.disableButton(button)
+			await Edit.edit_product(e.target.docId.value)
+			Util.enableButton(button, label);
+
+		})
+	}
+
+	const deleteForms = document.getElementsByClassName('form-delete-product');
+	for(let i = 0; i < deleteForms.length; i++){
+		deleteForms[i].addEventListener('submit', async e =>{
+			e.preventDefault();
+			if (!window.confirm("Press OK to delete")) return; 
+			const button = e.target.getElementsByTagName('button')[0];
+			const label = Util.disableButton(button)
+			await Edit.delete_product(e.target.docId.value, e.target.imageName.value);
+			Util.enableButton(button, label)
+		})
+	}
 }
 
 async function addNewProduct(form){
@@ -106,11 +134,21 @@ async function addNewProduct(form){
 
 function buildProductCard(product){
 	return `
-	<div class="card" style="width: 18rem; display: inline-block">
+	<div id="card-${product.docId}" class="card" style="width: 18rem; display: inline-block">
 		<img src="${product.imageURL}" class="card-img-top">
-		<div class="card-body"> <h5 class="card-title">${product.name}</h5>
-		<p class="card-text">$ ${product.price}<br>${product.summary}</p>
+		<div class="card-body">
+			<h5 class="card-title">${product.name}</h5>
+			<p class="card-text">$ ${product.price}<br>${product.summary}</p>
   		</div>
+		  <form class="form-edit-product float-start" method="post">
+		  	<input type="hidden" name="docId" value="${product.docId}">
+			<button class="btn btn-outline-primary" type="submit">Edit</button>
+		  </form>
+		  <form class="form-delete-product float-end" method="post">
+		  	<input type="hidden" name="docId" value="${product.docId}">
+		  	<input type="hidden" name="imageName" value="${product.imageName}">
+			<button class="btn btn-outline-danger" type="submit">Delete</button>
+		  </form>
 	</div>
 	`;
 }
