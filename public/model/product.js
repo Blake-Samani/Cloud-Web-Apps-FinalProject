@@ -5,6 +5,8 @@ export class Product {
 		this.summary = data.summary.trim();
 		this.imageName = data.imageName;
 		this.imageURL = data.imageURL;
+		this.qty = Number.isInteger(data.qty) ? data.qty : null;
+
 	}
 
 	serialize(){
@@ -14,6 +16,7 @@ export class Product {
 			summary: this.summary,
 			imageName: this.imageName,
 			imageURL: this.imageURL,
+			qty: this.qty,
 		}
 	}
 
@@ -46,4 +49,16 @@ export class Product {
 
 		//save the product object in firebase
 	}
+
+	static isSerializedProduct(p){
+		if(!p.name) return false;
+		if(!p.price || typeof p.price != 'number') return false;
+		if (!p.summary) return false;
+		if (!p.imageName) return false;
+		if(!p.imageURL || !p.imageURL.includes('https')) return false;
+		if(!p.qty || !Number.isInteger(p.qty)) return false;
+
+		return true;
+	}
+
 }

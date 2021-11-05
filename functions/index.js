@@ -54,6 +54,10 @@ async function updateUser(data, context){
 	}
 }
 
+// async function promoteAdmin(data, context{
+	
+// })
+
 async function getUserList(data, context){
 	if(!isAdmin(context.auth.token.email)){
 		if(Constant.DEV) console.log('not admin', context.auth.token.email);

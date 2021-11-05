@@ -34,6 +34,19 @@ export async function getProductList(){
 	});
 	return products;
 }
+
+export async function getProductListNoCloud() {
+	const products = [];
+	const snapShot = await firebase.firestore().collection(Constant.collectionNames.PRODUCTS)
+		.orderBy('name')
+		.get();
+	snapShot.forEach(doc => {
+		const p = new Product(doc.data());
+		p.docId = doc.id;
+		products.push(p);
+	})
+	return products;
+}
 const cf_getProductById = firebase.functions().httpsCallable('cf_getProductById');
 export async function getProductById(docId){
 	const result = await cf_getProductById(docId);

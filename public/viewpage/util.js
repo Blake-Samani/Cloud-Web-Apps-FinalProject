@@ -15,6 +15,10 @@ export function disableButton(button) {
 
 }
 
+export function currency(money) {
+	return new Intl.NumberFormat('en-US',{style: 'currency', currency: 'USD'}).format(money);
+}
+
 export function enableButton(button, label){
 	if (label) button.innerHTML = label;
 	button.disabled = false;
