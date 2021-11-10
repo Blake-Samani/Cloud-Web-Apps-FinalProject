@@ -6,6 +6,7 @@ import * as Util from './util.js'
 import * as Auth from '../controller/auth.js'
 import { ShoppingCart } from '../model/ShoppingCart.js'
 
+
 export function addEventListeners(){
 
 	Element.menuHome.addEventListener('click', async () =>{
@@ -15,7 +16,6 @@ export function addEventListeners(){
 		Util.enableButton(Element.menuHome, label);
 	})
 }
-
 export let cart;
 
 export async function home_page(){
@@ -49,6 +49,7 @@ export async function home_page(){
 			const p = products[e.target.index.value];
 			//dec p to shopping cart
 			cart.removeItem(p);
+			
 			document.getElementById('qty-' + p.docId).innerHTML = 
 				(p.qty == null || p.qty == 0) ? 'Add' : p.qty;
 			Element.shoppingCartCount.innerHTML = cart.getTotalQty();

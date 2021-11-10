@@ -1,5 +1,8 @@
 import * as Constant from '../model/constant.js'
+import { AccountInfo } from '../model/account_info.js';
 import { Product } from '../model/product.js';
+import { ShoppingCart } from '../model/ShoppingCart.js';
+
 
 export async function signIn(email, password){
 	await firebase.auth().signInWithEmailAndPassword(email, password);
@@ -47,6 +50,52 @@ export async function getProductListNoCloud() {
 	})
 	return products;
 }
+
+export async function checkOut(cart){
+	const data = cart.serialize(Date.now());
+	await firebase.firestore().collection(Constant.collectionNames.PURCHASE_HISTORY).add(data);
+}
+
+export async function getAccountInfo(uid) {
+	const doc = await firebase.firestore().collection(Constant.collectionNames.ACCOUNT_INFO)
+		.doc(uid).get();
+	if(doc.exists){
+		return new AccountInfo(doc.data());
+	} else{
+		const defaultInfo = AccountInfo.instance();
+		await firebase.firestore().collection(Constant.collectionNames.ACCOUNT_INFO)
+			.doc(uid).set(defaultInfo.serialize());
+		return defaultInfo;
+	}
+}
+
+export async function updateAccountInfo(uid, updateInfo){
+	await firebase.firestore().collection(Constant.collectionNames.ACCOUNT_INFO)
+		.doc(uid).update(updateInfo);
+}
+
+export async function uploadProfilePhoto(photoFile, imageName){
+	const ref = firebase.storage().ref()
+			.child(Constant.storageFolderName.PROFILE_PHOTOS + imageName)
+	const taskSnapShot = await ref.put(photoFile);
+	const photoURL = await taskSnapShot.ref.getDownloadURL();
+	return photoURL;
+}
+
+export async function getPurchaseHistory(uid){
+	const snapShot = await firebase.firestore().collection(Constant.collectionNames.PURCHASE_HISTORY)
+		.where('uid', '==', uid)
+		.orderBy('timestamp', 'desc')
+		.get();
+	const carts = [];
+	snapShot.forEach(doc =>{
+		const sc = ShoppingCart.deserialize(doc.data());
+		carts.push(sc);
+	})
+	return carts;
+}
+
+
 const cf_getProductById = firebase.functions().httpsCallable('cf_getProductById');
 export async function getProductById(docId){
 	const result = await cf_getProductById(docId);
@@ -77,6 +126,10 @@ export async function deleteProduct(docId, imageName){
 		.child(Constant.storageFolderNames.PRODUCT_IMAGES + imageName);
 	await ref.delete();
 }
+export async function createUser(email, password) {
+	await firebase.auth().createUserWithEmailAndPassword(email, password);
+}
+
 
 const cf_getUserList = firebase.functions().httpsCallable('cf_getUserList');
 export async function getUserList() {

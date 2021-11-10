@@ -3,7 +3,9 @@ import * as FirebaseController from './firebase_controller.js'
 import * as Constant from '../model/constant.js'
 import * as Util from '../viewpage/util.js'
 import * as Route from './route.js'
-import { home_page } from '../viewpage/home_page.js'
+import * as Home from '../viewpage/home_page.js'
+import * as Profile from '../viewpage/profile_page.js'
+
 
 export let currentUser;
 
@@ -29,6 +31,9 @@ export function addEventListeners() {
 
 	Element.menuSignout.addEventListener('click', async () =>{
 		try {
+			history.pushState(null, null, Route.routePathname.HOME);
+			Route.routing(window.location.pathname, window.location.hash);
+
 			await FirebaseController.signOut();
 		} catch (e) {
 			if (Constant.DEV) console.log(e);
@@ -36,9 +41,14 @@ export function addEventListeners() {
 		}
 	})
 
-	firebase.auth().onAuthStateChanged ( user =>{ //to change states upon sign in
+	firebase.auth().onAuthStateChanged (async user =>{ //to change states upon sign in
 		if(user && Constant.adminEmails.includes(user.email)){ //signed in
 			currentUser = user;
+
+			await Profile.getAccountInfo(user);
+
+			Home.initShoppingCart();// initiate the shopping cart
+
 			let elements = document.getElementsByClassName('modal-pre-auth');
 			for (let i = 0; i < elements.length; i++)
 				elements[i].style.display = 'none' //do not display
@@ -52,6 +62,10 @@ export function addEventListeners() {
 		}
 		else if(user){
 			currentUser = user;
+			await Profile.getAccountInfo(user);
+			Home.initShoppingCart();// initiate the shopping cart
+
+
 			let elements = document.getElementsByClassName('modal-pre-auth');
 			for (let i = 0; i < elements.length; i++)
 				elements[i].style.display = 'none' //do not display
@@ -67,6 +81,8 @@ export function addEventListeners() {
 			elementsZero.style.display = 'none'
 			elementsZero = document.getElementById('menu-products');
 			elementsZero.style.display = 'none'
+
+
 
 			
 			// let elements = document.getElementsByClassName('modal-pre-auth');
@@ -97,4 +113,31 @@ export function addEventListeners() {
 			history.pushState(null, null, Route.routePathname.HOME);
 		}
 	})
+	Element.buttonSignup.addEventListener('click', () => {
+		// show sign up modal
+		Element.modalSignin.hide();
+		Element.formSignup.reset();
+		Element.formSignupPasswordError.innerHTML=''
+		Element.modalSignup.show();
+	})
+	Element.formSignup.addEventListener('submit',async e=> {
+		e.preventDefault();
+		const email = e.target.email.value;
+		const password = e.target.password.value;
+		const passwordConfirm = e.target.passwordConfirm.value;
+
+		Element.formSignupPasswordError.innerHTML = ''
+		if(password != passwordConfirm) {
+			Element.formSignupPasswordError.innerHTML = 'Two passwords do not match';
+			return;
+		}
+		try {
+			await FirebaseController.createUser(email, password);
+			Util.info('Account Created!', `You are now signed in as ${email}`, Element.modalSignup);
+		} catch (e) {
+			if (Constant.DEV) console.log(e);
+			Util.info('Failed to create new account', JSON.stringify(e), Element.modalSignup);
+		}
+	})
+
 }

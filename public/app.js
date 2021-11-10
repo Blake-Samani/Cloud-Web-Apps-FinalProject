@@ -4,6 +4,9 @@ import * as ProductPage from './viewpage/product_page.js'
 import * as Home from './viewpage/home_page.js'
 import * as User from './viewpage/user_page.js'
 import * as Edit from './controller/edit_product.js'
+import * as Cart from './viewpage/cart.js'
+import * as Purchase from './viewpage/purchase_page.js'
+import * as Profile from './viewpage/profile_page.js'
 
 window.onload = () => {
 	const pathname = window.location.pathname;
@@ -24,3 +27,6 @@ ProductPage.addEventListeners();
 Home.addEventListeners();
 User.addEventListeners();
 Edit.addEventListeners();
+Cart.addEventListeners();
+Purchase.addEventListeners();
+Profile.addEventListeners();
