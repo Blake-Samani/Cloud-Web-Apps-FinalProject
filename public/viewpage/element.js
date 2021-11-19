@@ -51,3 +51,6 @@ export const modalTransactionView = new bootstrap.Modal(document.getElementById(
 export const modalTransactionTitle = document.getElementById('modal-transaction-title');
 export const modalTransactionBody = document.getElementById('modal-transaction-body');
 export const modalSignup = new bootstrap.Modal(document.getElementById('modal-signup'), {backdrop: 'static'});
+export const modalReview = new bootstrap.Modal(document.getElementById('modal-read-reviews'), {backdrop: 'static'});
+export const modalReviewTitle = document.getElementById('modal-read-reviews-title');
+export const modalReviewBody = document.getElementById('modal-read-reviews-body');

@@ -7,12 +7,14 @@ export const adminEmails = [
 
 export const storageFolderNames = {
 	PRODUCT_IMAGES: 'product_images/',
+	PROFILE_PHOTOS:'profile_photos/',
 }
 
 export const collectionNames = {
 	PRODUCTS: 'products',
 	PURCHASE_HISTORY: 'purchase_history',
 	ACCOUNT_INFO: 'account_info',
+	COMMENTS: 'comments',
 }
 
 

@@ -2,6 +2,7 @@ import * as Constant from '../model/constant.js'
 import { AccountInfo } from '../model/account_info.js';
 import { Product } from '../model/product.js';
 import { ShoppingCart } from '../model/ShoppingCart.js';
+import { Comment } from '../model/comment.js';
 
 
 export async function signIn(email, password){
@@ -76,7 +77,7 @@ export async function updateAccountInfo(uid, updateInfo){
 
 export async function uploadProfilePhoto(photoFile, imageName){
 	const ref = firebase.storage().ref()
-			.child(Constant.storageFolderName.PROFILE_PHOTOS + imageName)
+			.child(Constant.storageFolderNames.PROFILE_PHOTOS + imageName)
 	const taskSnapShot = await ref.put(photoFile);
 	const photoURL = await taskSnapShot.ref.getDownloadURL();
 	return photoURL;
@@ -145,4 +146,42 @@ export async function updateUser(uid, update){
 const cf_deleteUser = firebase.functions().httpsCallable('cf_deleteUser');
 export async function deleteUser(uid){
 	await cf_deleteUser(uid);
+}
+
+export async function addComment(comment){
+	const ref =  await firebase.firestore()
+			  .collection(Constant.collectionNames.COMMENTS)
+			  .add(comment.serialize());
+	return ref.id; //sql primary key
+  }
+
+  export async function getCommentList() {
+    let commentList = []
+    const snapshot = await firebase.firestore()
+        .collection(Constant.collectionNames.COMMENTS)
+        .orderBy('timestamp', 'desc')
+        .get();
+    
+    snapshot.forEach(doc => { //for each document create new comment
+        const t = new Comment(doc.data())
+        t.docId = doc.id
+    	commentList.push(t)
+    });
+    return commentList;
+}
+
+export async function getCommentListIds(docId) {
+    let commentList = []
+    const snapshot = await firebase.firestore()
+        .collection(Constant.collectionNames.COMMENTS)
+		.where('productId' ,'==', docId)
+        .orderBy('timestamp', 'desc')
+        .get();
+    
+    snapshot.forEach(doc => { //for each document create new comment
+        const t = new Comment(doc.data())
+        t.docId = doc.id
+    	commentList.push(t)
+    });
+    return commentList;
 }

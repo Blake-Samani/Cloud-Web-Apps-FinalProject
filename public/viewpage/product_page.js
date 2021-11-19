@@ -7,6 +7,7 @@ import * as Route from '../controller/route.js'
 import * as Edit from '../controller/edit_product.js'
 import * as Auth from '../controller/auth.js'
 
+
 let imageFile2Upload
 
 export function addEventListeners(){

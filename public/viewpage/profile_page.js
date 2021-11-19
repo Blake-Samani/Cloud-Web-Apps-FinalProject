@@ -178,7 +178,7 @@ export async function profile_page(){
 				<img src=${accountInfo.photoFile} class="rounded-circle" height="30px">
 			`;
 			Util.info('Success!', 'Profile photo updated!');
-		} catch (error) {
+		} catch (e) {
 			if (Constant.DEV) console.log(e);
 			Util.info('Photo update error', JSON.stringify(e));
 		}
