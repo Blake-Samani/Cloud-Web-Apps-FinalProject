@@ -75,6 +75,11 @@ export async function updateAccountInfo(uid, updateInfo){
 		.doc(uid).update(updateInfo);
 }
 
+export async function updateReview(docId, updateInfo){ //update review
+	await firebase.firestore().collection(Constant.collectionNames.COMMENTS)
+		.docId(docId).update(updateInfo);
+}
+
 export async function uploadProfilePhoto(photoFile, imageName){
 	const ref = firebase.storage().ref()
 			.child(Constant.storageFolderNames.PROFILE_PHOTOS + imageName)
@@ -95,6 +100,20 @@ export async function getPurchaseHistory(uid){
 	})
 	return carts;
 }
+
+export async function getProductHistory(productId){
+	const snapShot = await firebase.firestore().collection(Constant.collectionNames.PURCHASE_HISTORY)
+		.where('productId', '==', docId)
+		.orderBy('timestamp', 'desc')
+		.get();
+	const carts = [];
+	snapShot.forEach(doc =>{
+		const sc = ShoppingCart.deserialize(doc.data());
+		carts.push(sc);
+	})
+	return carts;
+}
+
 
 
 const cf_getProductById = firebase.functions().httpsCallable('cf_getProductById');
@@ -119,6 +138,8 @@ export async function updateProduct(product){
 	await cf_updateProduct({docId, data});
 	//call cloud function
 }
+
+
 
 const cf_deleteProduct = firebase.functions().httpsCallable('cf_deleteProduct');
 export async function deleteProduct(docId, imageName){
@@ -185,3 +206,12 @@ export async function getCommentListIds(docId) {
     });
     return commentList;
 }
+
+export async function userDeleteComments(commentId){
+	const ref = await firebase.firestore().
+				collection(Constant.collectionNames.COMMENTS)
+				.doc(commentId)
+				.delete();
+}
+
+

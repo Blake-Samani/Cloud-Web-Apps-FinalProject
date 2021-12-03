@@ -14,6 +14,7 @@ export const menuPurchases = document.getElementById('menu-purchases');
 
 //forms
 export const formSignin = document.getElementById('form-signin');
+export const reviewPage = document.getElementById('form-read-review');
 export const formAddProduct = {
 	form: document.getElementById('form-add-product'),
 	errorName: document.getElementById('form-add-product-error-name'),
@@ -27,6 +28,11 @@ export const formSignupPasswordError = document.getElementById('form-signup-pass
 export const formSignup = document.getElementById('form-signup');
 export const buttonSignup = document.getElementById('button-signup');
 
+export const formEditReview = {
+		form: document.getElementById('form-edit-review'),
+		content: document.getElementById('form-edit-review-content'),
+		timestamp: document.getElementById('form-edit-review-timestamp'),
+}
 
 export const formEditProduct = {
 	form: document.getElementById('form-edit-product'),
@@ -54,3 +60,8 @@ export const modalSignup = new bootstrap.Modal(document.getElementById('modal-si
 export const modalReview = new bootstrap.Modal(document.getElementById('modal-read-reviews'), {backdrop: 'static'});
 export const modalReviewTitle = document.getElementById('modal-read-reviews-title');
 export const modalReviewBody = document.getElementById('modal-read-reviews-body');
+export const modalEditReview = new bootstrap.Modal(document.getElementById('modal-edit-review'),{backdrop: 'static'});
+export const modalError = new bootstrap.Modal(document.getElementById('modal-error'), {backdrop: 'static'});
+export const modalErrorBody = document.getElementById('modal-error-body');
+export const modalEditReviewBody = document.getElementById('modal-edit-review-body');
+export const modalErrorReview = new bootstrap.Modal(document.getElementById('modal-error-review'), {backdrop: 'static'});

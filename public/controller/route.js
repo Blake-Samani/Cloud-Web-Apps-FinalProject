@@ -5,6 +5,7 @@ import * as Home from '../viewpage/home_page.js'
 import * as Cart from '../viewpage/cart.js'
 import * as Purchase from '../viewpage/purchase_page.js'
 import * as Profile from '../viewpage/profile_page.js'
+import * as Review from '../viewpage/review_page.js'
 
 export const routePathname = {
 	HOME: '/', //root location
@@ -14,6 +15,7 @@ export const routePathname = {
 	CART: '/cart',
 	PURCHASE: '/purchase',
 	PROFILE: '/profile',
+	REVIEW: '/review',
 
 }
 
@@ -25,6 +27,9 @@ export const routes = [
 	{pathname: routePathname.CART, page: Cart.cart_page},
 	{pathname: routePathname.PURCHASE, page: Purchase.purchase_page},
 	{pathname: routePathname.PROFILE, page: Profile.profile_page},
+	{pathname: routePathname.REVIEW, page: Review.review_page},
+
+
 
 
 

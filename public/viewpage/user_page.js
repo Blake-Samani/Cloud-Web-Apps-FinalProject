@@ -40,7 +40,7 @@ export async function users_page() {
 			html += buildUserRow(user);
 		});
 
-		html += '</tbody</table>'
+		html += '</tbody></table>'
 	} catch (e) {
 		if(Constant.DEV) console.log(e);
 		Util.info('Error getUserList', JSON.stringify(e));

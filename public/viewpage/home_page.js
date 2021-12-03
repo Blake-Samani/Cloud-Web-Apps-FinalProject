@@ -6,6 +6,7 @@ import * as Util from './util.js'
 import * as Auth from '../controller/auth.js'
 import { ShoppingCart } from '../model/ShoppingCart.js'
 import { Comment } from '../model/comment.js'
+import * as Review from '../viewpage/review_page.js'
 
 
 export function addEventListeners(){
@@ -37,73 +38,90 @@ export async function home_page(){
 		Util.info('Cannot get product info', JSON.stringify(e));
 	}
 
+	if(Auth.currentUser){
 	
-	// if(Auth){
-	// let history;
-	// history = await FirebaseController.getPurchaseHistory(Auth.currentUser.uid);
-	// let hasPurchased = false;
-	// }
-	for (let i = 0; i < products.length; i++){
-		html += buildProductView(products[i], i);
+		for (let i = 0; i < products.length; i++){ //for each product
+			html += buildProductView(products[i], i);
+			html += buildReviewBox(products[i],i)
+			html += `</div>`
 	}
+	}else{
+		for (let i = 0; i < products.length; i++){ //for each product
+			html += buildProductView(products[i], i);
+			html += `</div>`
+		}
+	}
+
 	Element.root.innerHTML = html;
 
-
+	if(Auth.currentUser){
+	let history;
+	let hasPurchased = false;
+	history = await FirebaseController.getPurchaseHistory(Auth.currentUser.uid);
 	const revForms = document.getElementsByClassName('form-write-review');
 	for (let i = 0; i < revForms.length; i++){
 		revForms[i].addEventListener('submit', async e =>{
 			e.preventDefault();
-			const p = products[e.target.index.value];
-			const content = document.getElementById('rev-' + p.docId).value;
-			const uid = Auth.currentUser.uid;
-      		const email = Auth.currentUser.email;
-        	const timestamp = Date.now();
-			const productId = p.docId;
-			// const docId = p.docId;
+			hasPurchased = false;
+			for(let k = 0; k < history.length; k++){//for each object in history array
+				for(let j = 0; j < history[k].items.length; j++){ //for each item at history[k]
+					if(products[i].docId == history[k].items[j].docId){
+						hasPurchased = true;
+					}
+				}
+			}
+			if(hasPurchased == true){
+				const p = products[e.target.index.value];
+				const content = document.getElementById('rev-' + p.docId).value;
 
-			const comment = new Comment({
-				uid, email, timestamp, content, productId
-			});
+					if(content){ //if the comment box is not blank
+					const uid = Auth.currentUser.uid;
+					const email = Auth.currentUser.email;
+					const timestamp = new Date(Date.now()).toString();
+					const productId = p.docId;
+		
+					const comment = new Comment({
+						uid, email, timestamp, content, productId
+					});
+		
+					const button = document.getElementById('button-add-new-review');
+					const label = Util.disableButton(button)
+					
+					try {
+						const docId = await FirebaseController.addComment(comment);
+						comment.docId = docId;
+					} catch (e) {
+						if (Constant.DEV) console.log(e)
+						Util.info('Error', JSON.stringify(e))
+					}
+		
+					document.getElementById('rev-' + p.docId).value = "" //clear the text area
+					Util.enableButton(button, label);
+					}else{
+						Element.modalErrorReview.show();
+					}
+			}else{
+				Element.modalError.show();
+			}
 
-
-			const button = document.getElementById('button-add-new-review');
-        	const label = Util.disableButton(button)
-
-			try {
-            	const docId = await FirebaseController.addComment(comment);
-            	comment.docId = docId;
-        	} catch (e) {
-            	if (Constant.DEV) console.log(e)
-            	Util.info('Error', JSON.stringify(e))
-        	}
-
-			document.getElementById('rev-' + p.docId).value = "" //clear the text area
-			Util.enableButton(button, label);
 		})
 	}
+}
 
-	// let commentList;
-	// try {
-	// 	commentList = await FirebaseController.getCommentList();
-	// 	console.log(commentList);
-	// } catch (e) {
-	// 	if (Constant.DEV) console.log(e);
-    //     Util.info('Error to get comment list', JSON.stringify(e));
-    //     return;
-
-	// }
-	
-
+	let reviews;
 	const readForms = document.getElementsByClassName('form-read-review');
-	for (let i = 0; i < revForms.length; i++){
+	for (let i = 0; i < readForms.length; i++){
 		readForms[i].addEventListener('submit', async e =>{
 			e.preventDefault();
-			const p = products[e.target.index.value];
-			Element.modalReviewTitle.innerHTML = `${p.name}`;
-			Element.modalReviewBody.innerHTML = await buildreviewView(p);
-			Element.modalReview.show();
+			reviews = await FirebaseController.getCommentListIds(products[i].docId); //retreive only comments pertaining to our product
+			
+			Review.review_page(reviews);
 		})
 	}
+
+
+
+
 
 
 	const decForms = document.getElementsByClassName('form-dec-qty');
@@ -133,6 +151,13 @@ export async function home_page(){
 		})
 	}
 
+
+
+
+
+
+
+
 }
 
 function buildProductView(product, index){
@@ -158,25 +183,16 @@ function buildProductView(product, index){
 				<input type="hidden" name="index" value ="${index}">
 				<button class="btn btn-outline-primary" type="submit">&plus;</button>
 			</form>
-			<form method="post" class="d-inline form-write-review">
-				<div>
-				<textarea id="rev-${product.docId}" placeholder="Write a review"></textarea>
-				<input type="hidden" name="index" value="${index}">
-				<br>
-				<button type="submit" id="button-add-new-review" class="btn btn-outline-info">Submit Review</button>
-				</div>
-			</form>
-				
-			<form method="post" class="d-inline form-read-review">
-				<div>
-				<input type="hidden" name="index" value ="${index}">
-				<button type="submit" id="button-rev-${product.docId}" class="btn btn-outline-info">Read Reviews</button>
-				</div>
-			</form>
-
 		</div>
+		<form method="post" class="d-inline form-read-review">
+			<div>
+			<input type="hidden" name="index" value ="${index}">
+			<button type="submit" id="button-review" class="btn btn-outline-info">Read Reviews</button>
+			</div>
+		</form>
+
   </div>
-</div>
+
 	`;
 }
 
@@ -192,6 +208,20 @@ export function initShoppingCart() {
 	Element.shoppingCartCount.innerHTML = cart.getTotalQty();
 }
 
+function buildReviewBox(product, index){
+	return `
+	<div>
+	<form method="post" class="d-inline form-write-review">
+		<div>
+		<textarea id="rev-${product.docId}" placeholder="Write a review"></textarea>
+		<input type="hidden" name="index" value="${index}">
+		<br>
+		<button type="submit" id="button-add-new-review" class="btn btn-outline-info">Submit Review</button>
+		</div>
+	</form>
+	</div>
+	`
+}
 async function buildreviewView (product){ //builds our review modal
 	let html = `
 	<table class="table">
@@ -213,9 +243,15 @@ async function buildreviewView (product){ //builds our review modal
 		<tr>
 			<td>${email}</td>
 			<td>${contents}</td>
+			<td>
+			<form class="form-delete-comment" method="post" style="display: inline-block;">
+				<input type="hidden" name="index" value ="${i}">
+				<button type="submit" class="btn btn-outline-danger">Delete</button>
+			</form>
+			</td>
+			
 		</tr>
 		`
-
 		}
 	}else{
 		html +=	`
@@ -226,7 +262,16 @@ async function buildreviewView (product){ //builds our review modal
 		`
 
 	}
+
 	html += '</tbody></table>';
 
+	const delForms = document.getElementsByClassName('form-delete-comment');
+	for(let i=0; i<delForms.length;i++){
+		delForms[i].addEventListener('submit', async () =>{
+			e.preventDefault();
+			console.log(i);
+
+		})
+	}
 	return html;
 }

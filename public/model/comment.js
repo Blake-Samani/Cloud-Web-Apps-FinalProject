@@ -5,6 +5,7 @@ export class Comment{
         this.timestamp = data.timestamp;
         this.content = data.content;
         this.productId = data.productId;
+        
         // this.likes = data.likes;
 
     }

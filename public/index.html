@@ -130,6 +130,23 @@ aria-labelledby="modal-edit-product-title" aria-hidden="true">
   </div>
 </div>
 
+<!-- Modal: Edit Reviews-->
+<div class="modal fade" id="modal-edit-review" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
+aria-labelledby="modal-edit-review-title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-edit-review-title">Edit Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-edit-review-body">
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Read Reviews -->
 <div class="modal fade" id="modal-read-reviews" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
 aria-labelledby="modal-read-reviews-label" aria-hidden="true">
@@ -141,7 +158,44 @@ aria-labelledby="modal-read-reviews-label" aria-hidden="true">
       </div>
       <div class="modal-body" id="modal-read-reviews-body"></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Error Message -->
+<div class="modal fade" id="modal-error" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
+aria-labelledby="modal-error-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-error-title">Sorry!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-error-body">
+        <p>You have not yet purchased this item.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Review Error Message -->
+<div class="modal fade" id="modal-error-review" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
+aria-labelledby="modal-error-review-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-error-review-title">Sorry!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-error-review-body">
+        <p>You cannot leave a blank review.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
       </div>
     </div>
   </div>
